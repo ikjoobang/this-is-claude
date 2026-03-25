@@ -40,7 +40,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+  background: #000000;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -48,6 +48,16 @@ body {
   z-index: 10000;
   opacity: 1;
   transition: opacity 0.8s ease-out;
+}
+
+/* Full-screen animated particle canvas */
+#particle-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
 }
 
 #book-cover-screen.hidden {
@@ -66,9 +76,10 @@ body {
 }
 
 .book-3d {
-  width: 280px;
-  height: 400px;
-  background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
+  width: 320px;
+  height: 440px;
+  background: linear-gradient(135deg, #0a0a0a 0%, #111 50%, #0a0a0a 100%);
+  border: 1px solid rgba(0, 255, 65, 0.15);
   border-radius: 8px;
   box-shadow: 20px 20px 60px rgba(0,0,0,0.8), -10px -10px 40px rgba(200,169,81,0.1);
   perspective: 1000px;
@@ -1213,8 +1224,8 @@ body.font-large .chapter-body { font-size: 17px; }
 
 <!-- 3D BOOK COVER INTRO -->
 <div id="book-cover-screen">
+  <canvas id="particle-canvas"></canvas>
   <div class="book-3d-container">
-    <div class="particles"></div>
     <div class="book-3d">
       <div class="book-cover-content">
         <h1>THIS IS<br>CLAUDE</h1>
@@ -5171,6 +5182,79 @@ document.addEventListener('DOMContentLoaded', () => {
   initializeEbook();
 });
 
+// ===== PARTICLE NETWORK ANIMATION (beyond-reality style) =====
+(function initParticles() {
+  const canvas = document.getElementById('particle-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let w, h, particles = [], animId;
+
+  function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Create particles
+  for (let i = 0; i < 120; i++) {
+    particles.push({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      vx: (Math.random() - 0.5) * 0.6,
+      vy: (Math.random() - 0.5) * 0.6,
+      r: Math.random() * 2 + 1,
+      brightness: Math.random()
+    });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, w, h);
+
+    // Draw connections
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 150) {
+          const alpha = (1 - dist / 150) * 0.3;
+          ctx.beginPath();
+          ctx.strokeStyle = `rgba(0, 255, 65, ${alpha})`;
+          ctx.lineWidth = 0.5;
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    // Draw particles
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0 || p.x > w) p.vx *= -1;
+      if (p.y < 0 || p.y > h) p.vy *= -1;
+
+      const glow = 0.4 + 0.6 * Math.sin(Date.now() * 0.002 + p.brightness * 10);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(0, 255, 65, ${glow})`;
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r * 3, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(0, 255, 65, ${glow * 0.15})`;
+      ctx.fill();
+    });
+
+    animId = requestAnimationFrame(draw);
+  }
+  draw();
+
+  // Stop animation when book opens
+  window.stopParticles = () => { cancelAnimationFrame(animId); };
+})();
+
 // Open book on button click
 document.querySelector('.open-button').addEventListener('click', openBook);
 
@@ -5182,7 +5266,8 @@ function openBook() {
   // Animate book opening
   book.classList.add('opened');
   
-  // Fade out cover and show page view
+  // Stop particles and fade out cover
+  if (window.stopParticles) window.stopParticles();
   setTimeout(() => {
     coverScreen.classList.add('hidden');
     pageView.classList.add('active');
