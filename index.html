@@ -8,7 +8,7 @@
 <meta property="og:title" content="This is Claude - AI 에이전트, 관점을 뒤집다">
 <meta property="og:description" content="2026년 최신 Claude 완벽 가h이드. AI 에이전트, 관점을 뒤집다. 지은이: 방익주">
 <meta property="og:url" content="https://xivix-cureair.store">
-<meta property="og:image" content="https://xivix-cureair.store/og-image.png">
+<meta property="og:image" content="https://xivix-cureair.store/og-image.png">h
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:site_name" content="This is Claude">
@@ -74,7 +74,7 @@ body {
 
 .header-actions { display: flex; gap: 12px; align-items: center; }
 
-#font-size-btn, #theme-toggle {
+#font-size-btn, #theme-toggle { font-size:16px;
   background: none; border: 1px solid rgba(139,26,26,0.15);
   border-radius: 8px; padding: 6px 12px; cursor: pointer;
   font-size: 13px; color: var(--text-light); transition: all 0.2s;
@@ -1701,7 +1701,7 @@ pre, code, .code-block {
     left: 0 !important;
   }
   /* Hide dark mode toggle text on small screens */
-  #font-size-btn, #theme-toggle {
+  #font-size-btn, #theme-toggle { font-size:16px;
     padding: 6px 8px !important;
     font-size: 14px !important;
   }
@@ -1949,6 +1949,7 @@ body.dark .icon-compare-card .icc-name {
 body.font-small .chapter-body p { font-size: 14px !important; }
 body.font-small .chapter-body { font-size: 14px !important; }
 body.font-small .chapter-body li { font-size: 14px !important; }
+      #theme-toggle { font-size: 16px !important; min-width: 36px; min-height: 33px; display: inline-flex !important; align-items: center; justify-content: center; border: 1.5px solid rgba(139,26,26,0.3) !important; }
 
 body.font-large .chapter-body p { font-size: 18px !important; }
 body.font-large .chapter-body { font-size: 18px !important; }
@@ -2332,7 +2333,7 @@ h2, h3, h4, .chapter-title, .ch7-section-title, .ch7-subsection-title {
   <div class="logo" onclick="scrollToSection('cover')">This is <span>Claude</span></div>
   <div class="header-actions">
     <button id="font-size-btn" onclick="cycleFontSize()">가</button>
-    <button id="theme-toggle" onclick="toggleTheme()"></button>
+    <button id="theme-toggle" onclick="toggleTheme()">☀️</button>
   </div>
 </header>
 
@@ -9110,7 +9111,7 @@ function toggleSidebar() {
 }
 function togglePart(el) { el.classList.toggle('collapsed'); }
 function toggleTheme() {
-  document.body.classList.toggle('dark');
+  document.body.classList.toggle('dark'); document.getElementById('theme-toggle').textContent=document.body.classList.contains('dark')?'🌙':'☀️';
   document.getElementById('theme-toggle').textContent = document.body.classList.contains('dark') ? '☀️' : '';
 }
 let fontState = 0;
